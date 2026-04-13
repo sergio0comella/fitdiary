@@ -1,0 +1,31 @@
+# ─── Backend ─────────────────────────────────────────────────────────────────
+backend/target/
+backend/.mvn/wrapper/maven-wrapper.jar
+backend/*.log
+
+# Spring config with secrets (keep application.yml templates, ignore overrides)
+backend/src/main/resources/application-local.yml
+backend/src/main/resources/application-prod.yml
+
+# ─── Frontend ────────────────────────────────────────────────────────────────
+frontend/node_modules/
+frontend/dist/
+frontend/.env
+frontend/.env.local
+frontend/.env.*.local
+
+# ─── Docker ──────────────────────────────────────────────────────────────────
+*.env
+.env
+.env.local
+
+# ─── IDE / OS ────────────────────────────────────────────────────────────────
+.idea/
+*.iml
+.vscode/
+.DS_Store
+Thumbs.db
+
+# ─── Logs ────────────────────────────────────────────────────────────────────
+*.log
+logs/

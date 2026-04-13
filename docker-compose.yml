@@ -1,0 +1,61 @@
+version: '3.9'
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: fitdiary-db
+    environment:
+      POSTGRES_DB: fitdiary
+      POSTGRES_USER: fitdiary
+      POSTGRES_PASSWORD: fitdiary_secret
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./backend/src/main/resources/db/init.sql:/docker-entrypoint-initdb.d/init.sql
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U fitdiary"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - fitdiary-network
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: fitdiary-backend
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/fitdiary
+      SPRING_DATASOURCE_USERNAME: fitdiary
+      SPRING_DATASOURCE_PASSWORD: fitdiary_secret
+      JWT_SECRET: fitdiary_jwt_super_secret_key_2024_change_in_production
+      JWT_EXPIRATION: 86400000
+      JWT_REFRESH_EXPIRATION: 604800000
+    ports:
+      - "8080:8080"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - fitdiary-network
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: fitdiary-frontend
+    ports:
+      - "3000:80"
+    depends_on:
+      - backend
+    networks:
+      - fitdiary-network
+
+volumes:
+  postgres_data:
+
+networks:
+  fitdiary-network:
+    driver: bridge
